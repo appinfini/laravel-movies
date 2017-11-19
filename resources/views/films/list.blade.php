@@ -5,7 +5,12 @@
     <div class="row">
         <div class="col-md-10 col-md-offset-1">
             <div class="panel panel-default">
-                <div class="panel-heading">Popular Films</div>
+                <div class="panel-heading">
+                    Films List
+                    @auth
+                        <a href="{{ route('filmsCreate') }}" class="btn btn-primary btn-sm pull-right" role="button">Create Film</a>
+                    @endauth
+                </div>
 
                 <div class="panel-body">
                     @foreach($films['data'] as $film)

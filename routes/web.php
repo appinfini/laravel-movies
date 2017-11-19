@@ -17,6 +17,9 @@
 
 Auth::routes();
 
-Route::get('/',             'FilmController@index');
-Route::get('/films/',       'FilmController@filmsList')->name('films');
-Route::get('/films/{slug}', 'FilmController@filmsShow')->name('filmsShow');
+Route::get('/',                          'FilmController@index');
+Route::get('/home/',                     'HomeController@index')->name('home');
+Route::get('/films/',                    'FilmController@filmsList')->name('films');
+Route::get('/films/{slug}',              'FilmController@filmsShow')->name('filmsShow');
+Route::post('/films/{slug}',             'FilmController@filmsShow')->name('filmsShow');
+Route::post('/films/create',             'FilmController@filmsCreate')->name('filmsCreate');

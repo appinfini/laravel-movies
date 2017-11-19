@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // Films Routes
+Route::post    ('films/{film}/post-comment/{user}',  'Api\FilmController@postComment');
 Route::resource('films',   'Api\FilmController');
 
 // \Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {

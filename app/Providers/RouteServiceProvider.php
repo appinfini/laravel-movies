@@ -26,6 +26,12 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
 
         // Model binding for film.
+        Route::bind('user', function ($value) {
+            return \App\User::where('id', $value)
+                ->first();
+        });
+
+        // Model binding for film.
         Route::bind('film', function ($value) {
             return \App\Film::with([
                 'country',

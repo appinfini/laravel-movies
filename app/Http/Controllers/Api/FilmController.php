@@ -15,7 +15,7 @@ class FilmController extends Controller
 {
     public function __construct()
     {
-//        $this->middleware('auth:api', ['only' => ['store']]);
+        $this->middleware('auth:api', ['only' => ['store', 'postComment']]);
     }
 
     /**
@@ -111,6 +111,36 @@ class FilmController extends Controller
 
         // Return response
         return response()->api(['result' => ['film' => $film->toArray()], 'messages' => __('Api/film.success_film_created')]);
+    }
+
+    /**
+     * Store a new comment.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function postComment(\App\Film $film, \App\User $user, Request $request)
+    {
+        // Validation rules
+        $validator = Validator::make( $request->all(), [
+            'comment'       => 'required|min:3|max:5000',
+        ]);
+
+        // If validation fails
+        if ( $validator->fails() ) {
+            $errors = $validator->errors()->all();
+            return response()->api(['messages' => $errors, 'error_code' => 1]);
+        }
+
+        // Create comment
+        $comment = \App\FilmComment::create([
+            'user_id'  => $user->id,
+            'film_id'  => $film->id,
+            'comment'  => $request->input('comment'),
+        ]);
+
+        // Return response
+        return response()->api(['result' => ['comment' => $comment->toArray()], 'messages' => __('Api/film.success_comment_created')]);
     }
 
     /**

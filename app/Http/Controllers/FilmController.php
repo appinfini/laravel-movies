@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Auth;
 
 class FilmController extends Controller
 {
@@ -55,6 +56,17 @@ class FilmController extends Controller
      */
     public function filmsShow(Request $request)
     {
+        //Default alert
+        $messages = [];
+
+        //If posting comment
+        if ($request->isMethod('post')) {
+
+            //Calling API for posting comment
+            $response = $this->callApi('POST', $request->path() . '/post-comment/' . Auth::User()->id, $request);
+            $messages = $this->messages_parser($response);
+        }
+
         //Calling API for getting film list
         $response = $this->callApi('GET', $request->path(), $request);
 
@@ -71,8 +83,9 @@ class FilmController extends Controller
         }
 
         //View page
-        $film['genre'] = $genreText;
-        $data['film'] = $film;
+        $film['genre']    = $genreText;
+        $data['film']     = $film;
+        $data['messages'] = $messages;
         return view('films/show', $data);
     }
 
@@ -84,8 +97,20 @@ class FilmController extends Controller
     public function callApi($method = 'GET', $uri, $request, $params =  [])
     {
         //Prepping form params
-        $formParams = $method == 'GET' ? ['query' => array_merge($request->all(), $params)] : ['form_params' => $params];
+        $formParams = $method == 'GET' ? ['query' => array_merge($request->all(), $params)] : ['form_params' => array_merge($request->all(), $params)];
         $responseBody = [];
+
+        //Including headers
+        if (Auth::check()) {
+            $accessToken = Auth::User()->createToken('Auth')->accessToken;
+
+            $formParams = array_merge($formParams, [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Authorization' => 'Bearer '.$accessToken,
+                ],
+            ]);
+        }
 
         //Calling resource
         $client       = new GuzzleHttp\Client();
@@ -106,7 +131,7 @@ class FilmController extends Controller
     }
 
     /**
-     * Paginate
+     * Paginate.
      *
      * @return array
      */
@@ -128,6 +153,35 @@ class FilmController extends Controller
             'prevPageURL' => $prevPageURL,
             'nextPageURL' => $nextPageURL,
         ];
+    }
+
+    /**
+     * Response parser for success and error messages.
+     *
+     * @return array
+     */
+    public function messages_parser($response)
+    {
+        // Default response
+        $result = [
+            'success' => [],
+            'error'   => [],
+        ];
+
+        // If response not present
+        if (empty($response) or empty($response['messages']) or !array_key_exists('error_code', $response))
+            return $result;
+
+        // If success message
+        if ($response['error_code'] == 0)
+            $result['success'] = $response['messages'];
+
+        // If error message
+        if ($response['error_code'] != 0)
+            $result['error'] = $response['messages'];
+
+        // Return response
+        return $result;
     }
 
 }

@@ -182,6 +182,8 @@ return [
          * New Custom Providers...
          */
         Intervention\Image\ImageServiceProvider::class,
+        Laravel\Passport\PassportServiceProvider::class,
+
     ],
 
     /*

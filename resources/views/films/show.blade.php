@@ -7,10 +7,24 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     {{ $film['name'] }}
-                    <a href="/films" class="btn btn-primary btn-sm pull-right" role="button">Back to list</a>
+                    <a href="{{ route('films')  }}" class="btn btn-primary btn-sm pull-right" role="button">Back to list</a>
                 </div>
 
                 <div class="panel-body">
+
+                    @if (!empty($messages['error']))
+                        <div class="alert alert-danger alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            {{ $messages['error'] }}
+                        </div>
+                    @endif
+                    @if (!empty($messages['success']))
+                        <div class="alert alert-success alert-dismissible">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            {{ $messages['success'] }}
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-sm-6 col-md-6">
                             <div class="thumbnail">
@@ -55,7 +69,39 @@
                     </div>
                     <hr>
                     <div class="panel-heading">
-                        <h4>Comments <a href="/films" class="btn btn-primary btn-sm pull-right" role="button">Post Comment</a></h4>
+                        <h4>Comments
+                            @guest
+                            <span class="pull-right">
+                                You must be logged in to post comments. <a href="{{ route('login') }}" class="btn btn-primary" role="button">Login</a>
+                            </span>
+                            @endguest
+                        </h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            @auth
+                                <form class="form-horizontal" method="post">
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Name</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" class="form-control" placeholder="Name" disabled name="name" value="{{ Auth::User()->name }}">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">Comment</label>
+                                        <div class="col-sm-10">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <textarea class="form-control" rows="3" placeholder="Enter comment..." name="comment"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="submit" class="btn btn-default">Post Comment</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            @endauth
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">

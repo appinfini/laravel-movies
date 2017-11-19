@@ -11,6 +11,7 @@ return [
     |
     */
 
-    'success_film_created' => 'Film created successfully.',//0
+    'success_film_created'    => 'Film created successfully.',
+    'success_comment_created' => 'Comment posted successfully.',
 
 ];
