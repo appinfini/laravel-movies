@@ -17,5 +17,6 @@
 
 Auth::routes();
 
-Route::get('/', 'FilmController@index');
-Route::get('/films/', 'FilmController@filmsList')->name('films');
+Route::get('/',             'FilmController@index');
+Route::get('/films/',       'FilmController@filmsList')->name('films');
+Route::get('/films/{slug}', 'FilmController@filmsShow')->name('filmsShow');

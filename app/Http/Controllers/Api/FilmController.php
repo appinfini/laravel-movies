@@ -74,8 +74,9 @@ class FilmController extends Controller
             $fileName = uniqid() .'_'. mt_rand() . '.' . $image->extension();
 
             // Small image
+            $resizeConfig = config('api.films.images.resize.medium');
             Image::make($image)
-                ->resize(400, null, function ($constraint) {
+                ->resize($resizeConfig['width'], $resizeConfig['height'], function ($constraint) {
                     $constraint->aspectRatio();
                 })
                 ->save(storage_path($uploadPath . $fileName));

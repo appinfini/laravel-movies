@@ -28,16 +28,17 @@ $factory->define(App\Film::class, function (Faker\Generator $faker) {
 
     $countryID = random_int(App\Country::min('id'), App\Country::max('id'));
     $filmName  = $faker->words(3, true);
+    $resizeConfig = config('api.films.images.resize.medium');
 
     return [
         'country_id'   => $countryID,
         'name'         => ucwords($filmName),
         'slug'         => str_slug($filmName, '-'),
-        'description'  => $faker->text(500),
+        'description'  => $faker->text(1000),
         'release_date' => $faker->date($format = 'Y-m-d', $max = 'now'),
         'rating'       => rand(1,5),
         'ticket_price' => rand(50,999),
-        'cover'        => $faker->image('storage/app/public/films', 400, 400, 'cats', false),
+        'cover'        => $faker->image('storage/app/public/films', $resizeConfig['width'], $resizeConfig['height'], 'fashion', false),
     ];
 });
 

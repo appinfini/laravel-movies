@@ -47,14 +47,14 @@ class Film extends Model
     public function getCoverAttribute($value)
     {
         // Film cover path
-        $path = 'app/public/films/';
+        $path = 'storage/films/';
 
 		// If image is empty or file not exists
 		if (empty ($value))
-			return storage_path($path . 'custom/default-cover.png');
+			return asset($path . 'custom/default-cover.png');
 
         //If cover exists
-        return storage_path( $path . $value );
+        return asset( $path . $value );
 
     }
 

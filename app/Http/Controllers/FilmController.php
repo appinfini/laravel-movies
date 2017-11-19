@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
+use Illuminate\Routing\Route;
 
 class FilmController extends Controller
 {
@@ -42,9 +41,39 @@ class FilmController extends Controller
         //If film present then providing data to view
         $data['films'] = !empty ($response['data']['films']) ? $response['data']['films'] : [];
 
+        //Get paginate links
+        $data['paginate'] = $this->paginate($data['films'], $request);
+
         //View page
-        $data['paginate'] = $this->paginate($data['films']);
         return view('films/list', $data);
+    }
+
+    /**
+     * Show the specific film.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function filmsShow(Request $request)
+    {
+        //Calling API for getting film list
+        $response = $this->callApi('GET', $request->path(), $request);
+
+        //If film present then providing data to view
+        $film = !empty ($response['data']['films']) ? $response['data']['films'] : [];
+
+        $genreText = '';
+        if (count($film) > 0) {
+            if (count($film['genres']) > 0) {
+                foreach ($film['genres'] as $k => $genre) {
+                    $genreText .= ($k == 0 ? '' : ', ') . $genre['genre']['name'];
+                }
+            }
+        }
+
+        //View page
+        $film['genre'] = $genreText;
+        $data['film'] = $film;
+        return view('films/show', $data);
     }
 
     /**
@@ -55,7 +84,7 @@ class FilmController extends Controller
     public function callApi($method = 'GET', $uri, $request, $params =  [])
     {
         //Prepping form params
-        $formParams = $method == 'GET' ? array_merge($request->all(), $params) : ['form_params' => $params];
+        $formParams = $method == 'GET' ? ['query' => array_merge($request->all(), $params)] : ['form_params' => $params];
         $responseBody = [];
 
         //Calling resource
@@ -77,18 +106,28 @@ class FilmController extends Controller
     }
 
     /**
-     * Paginate Handler.
+     * Paginate
      *
-     * @return \Illuminate\Http\Response
+     * @return array
      */
-    public function paginate($array)
+    public function paginate($data, $request)
     {
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $prevPageURL = '';
+        $nextPageURL = '';
 
-        $col = new Collection($array['data']);
+        //If prev page is present
+        if (!empty($data['prev_page_url']))
+            $prevPageURL = '<a href="'.$request->url() .'?page='. ($data['current_page'] - 1).'" class="btn btn-primary pull-left" role="button">Previous</a>';
 
-        $currentPageSearchResults = $col->slice(($currentPage - 1) * $array['per_page'], $array['per_page'])->all();
+        //If next page is present
+        if (!empty($data['next_page_url']))
+            $nextPageURL = '<a href="'.$request->url() .'?page='. ($data['current_page'] + 1).'" class="btn btn-primary pull-right" role="button">Next</a>';
 
-        return new LengthAwarePaginator($currentPageSearchResults, count($col), $array['per_page']);
+        //Return paginate URLs
+        return [
+            'prevPageURL' => $prevPageURL,
+            'nextPageURL' => $nextPageURL,
+        ];
     }
+
 }

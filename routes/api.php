@@ -18,4 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 // Films Routes
-Route::resource('films', 'Api\FilmController');
+Route::resource('films',   'Api\FilmController');
+
+// \Event::listen('Illuminate\Database\Events\QueryExecuted', function ($query) {
+//     echo'<pre>';
+//     var_dump($query->sql);
+//     var_dump($query->bindings);
+//     var_dump($query->time);
+//     echo'</pre>';
+// });

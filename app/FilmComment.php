@@ -33,4 +33,12 @@ class FilmComment extends Model
 		'updated_at',
     ];
 
+    /**
+     * Get the genre record associated with the film.
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
 }

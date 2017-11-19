@@ -27,8 +27,18 @@ class RouteServiceProvider extends ServiceProvider
 
         // Model binding for film.
         Route::bind('film', function ($value) {
-            return \App\Film::with(['country', 'genres', 'comments'])
-                ->where('id', $value)->first();
+            return \App\Film::with([
+                'country',
+                'genres' => function($query) {
+                    $query->with(['genre']);
+                },
+                'comments' => function($query) {
+                    $query->with(['user']);
+                },
+            ])
+                ->where('id', $value)
+                ->orWhere('slug', $value)
+                ->first();
         });
 
     }
