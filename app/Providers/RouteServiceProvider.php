@@ -23,9 +23,14 @@ class RouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
-
         parent::boot();
+
+        // Model binding for film.
+        Route::bind('film', function ($value) {
+            return \App\Film::with(['country', 'genres', 'comments'])
+                ->where('id', $value)->first();
+        });
+
     }
 
     /**

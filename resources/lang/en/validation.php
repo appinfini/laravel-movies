@@ -100,8 +100,10 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'genre.*' => [
+            'required' => 'Each genre is required.',
+            'numeric'  => 'Each genre must be numeric.',
+            'exists'   => 'One or more genres are invalid.',
         ],
     ],
 

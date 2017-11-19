@@ -176,7 +176,12 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\ResponseServiceProvider::class,
 
+        /*
+         * New Custom Providers...
+         */
+        Intervention\Image\ImageServiceProvider::class,
     ],
 
     /*
@@ -226,6 +231,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        //Custom
+        'Image' => Intervention\Image\Facades\Image::class,
+        'Input' => Illuminate\Support\Facades\Input::class,
     ],
 
 ];
