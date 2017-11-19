@@ -95,12 +95,12 @@ class FilmController extends Controller
         ]);
 
         // If filmID is generated, then adding genres referance to the film
-        if ( !empty ($film['film_id']) ) {
+        if ( !empty ($film->id) ) {
 
             //Prepping an array to save genres
             foreach ($request->input('genre') as $genre) {
 
-                $addGenres = [
+                $addGenres[] = [
                     'film_id' => $film['film_id'],
                     'genre_id' => $genre,
                 ];
@@ -153,5 +153,23 @@ class FilmController extends Controller
     {
         //Response
         return response()->api(['result' => ['films' => $film]]);
+    }
+
+    /**
+     * Get movie creation data.
+     *
+     * @param  \App\Film $film
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //Getting all details requirng for film creation.
+        $result = [
+            'country' => \App\Country::get()->toArray(),
+            'genre'   => \App\Genre::get()->toArray(),
+        ];
+
+        //Response
+        return response()->api(['result' => ['films' => $result]]);
     }
 }

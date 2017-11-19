@@ -90,6 +90,50 @@ class FilmController extends Controller
     }
 
     /**
+     * Create film.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function filmsCreate(Request $request)
+    {
+        //Default alert
+        $messages = [];
+
+        //If posting comment
+        if ($request->isMethod('post')) {
+
+            //Calling API for creating film
+            $response = $this->callApi('POST', 'films', $request);
+            $messages = $this->messages_parser($response);
+
+            //If success, then redirecting to new created film.
+            if (array_key_exists('error_code', $response) and $response['error_code'] == 0)
+                return redirect('films/' . $response['data']['film']['slug']);
+        }
+
+        //Calling API for getting film creation data
+        $response = $this->callApi('GET', $request->path(), $request);
+
+        //If film present then providing data to view
+        $films = !empty ($response['data']['films']) ? $response['data']['films'] : [];
+
+//        $genreText = '';
+//        if (count($film) > 0) {
+//            if (count($film['genres']) > 0) {
+//                foreach ($film['genres'] as $k => $genre) {
+//                    $genreText .= ($k == 0 ? '' : ', ') . $genre['genre']['name'];
+//                }
+//            }
+//        }
+
+        //View page
+//        $film['genre']    = $genreText;
+        $data['films']    = $films;
+        $data['messages'] = $messages;
+        return view('films/create', $data);
+    }
+
+    /**
      * Guzzle calls.
      *
      * @return \Illuminate\Http\Response
